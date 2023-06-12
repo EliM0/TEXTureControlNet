@@ -4,7 +4,7 @@ In this repository we added [ControlNet](https://github.com/lllyasviel/ControlNe
 
 ## Content
 
-This repository is forked from the [TEXTure](https://github.com/TEXTurePaper/TEXTurePaper) repository so it has all the code present there. We also added the files from the [ControlNet](https://github.com/lllyasviel/ControlNet) repository to be able to use it. Then we added the file `controlnet_depth.py` and some changes around the TEXTure code to be able to use ControlNet in TEXTure.
+This repository is forked from the [TEXTure](https://github.com/TEXTurePaper/TEXTurePaper) repository so it has all the code present there. We also added the files from the [ControlNet](https://github.com/lllyasviel/ControlNet) repository to be able to use it. Then we added the files `controlnet_depth.py` and `prompt_config.yml`, and some changes around the TEXTure code to be able to use ControlNet in TEXTure.
 
 ## Installation
 
