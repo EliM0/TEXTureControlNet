@@ -6,6 +6,7 @@ import einops
 import imageio
 import numpy as np
 import pyrallis
+import yaml
 import torch
 import torch.nn.functional as F
 from PIL import Image
@@ -19,6 +20,7 @@ from src import utils
 from src.configs.train_config import TrainConfig
 from src.models.textured_mesh import TexturedMeshModel
 from src.stable_diffusion_depth import StableDiffusion
+from src.controlnet_depth import ControlNet
 from src.training.views_dataset import ViewsDataset, MultiviewDataset
 from src.utils import make_path, tensor2numpy
 
@@ -47,8 +49,17 @@ class TEXTure:
         self.text_z, self.text_string = self.calc_text_embeddings()
         self.dataloaders = self.init_dataloaders()
         self.back_im = torch.Tensor(np.array(Image.open(self.cfg.guide.background_img).convert('RGB'))).to(
-            self.device).permute(2, 0,
-                                 1) / 255.0
+            self.device).permute(2, 0, 1) / 255.0
+
+        try:
+            with open('./configs/ControlNet/prompt_config.yml', mode='r') as file:
+                self.prompt_cfg = yaml.load(file, Loader=yaml.FullLoader)
+            self.a_prompt = self.prompt_cfg['additional_prompt']
+            self.n_prompt = self.prompt_cfg['negative_prompt']
+        except FileNotFoundError as e:
+            logger.info(f'Additional and negative prompts not specified in ./configs/ControlNet/prompt_config.yml. Using empty strings instead.')
+            self.a_prompt = ""
+            self.n_prompt = ""
 
         logger.info(f'Successfully initialized {self.cfg.log.exp_name}')
 
@@ -68,7 +79,17 @@ class TEXTure:
         return model
 
     def init_diffusion(self) -> Any:
-        diffusion_model = StableDiffusion(self.device, model_name=self.cfg.guide.diffusion_name,
+        if self.cfg.guide.control_net:
+            diffusion_model = ControlNet(self.device, model_name=self.cfg.guide.diffusion_name,
+                                          concept_name=self.cfg.guide.concept_name,
+                                          concept_path=self.cfg.guide.concept_path,
+                                          latent_mode=False,
+                                          min_timestep=self.cfg.optim.min_timestep,
+                                          max_timestep=self.cfg.optim.max_timestep,
+                                          no_noise=self.cfg.optim.no_noise,
+                                          use_inpaint=True)
+        else:
+            diffusion_model = StableDiffusion(self.device, model_name=self.cfg.guide.diffusion_name,
                                           concept_name=self.cfg.guide.concept_name,
                                           concept_path=self.cfg.guide.concept_path,
                                           latent_mode=False,
@@ -268,7 +289,20 @@ class TEXTure:
                                  'checkerboard_input')
         self.diffusion.use_inpaint = self.cfg.guide.use_inpainting and self.paint_step > 1
 
-        cropped_rgb_output, steps_vis = self.diffusion.img2img_step(text_z, cropped_rgb_render.detach(),
+        if self.cfg.guide.control_net:
+            cond, un_cond = self.diffusion.get_control_net_inputs(cropped_depth_render.detach(), text_string, self.a_prompt, 
+                                                                self.n_prompt, image_resolution=512, strength=1.0)
+
+            cropped_rgb_output, steps_vis = self.diffusion.img2img_step(text_z, cropped_rgb_render.detach(),
+                                                                        cropped_depth_render.detach(),
+                                                                        cond, un_cond,
+                                                                        guidance_scale=self.cfg.guide.guidance_scale,
+                                                                        strength=1.0, update_mask=cropped_update_mask,
+                                                                        fixed_seed=self.cfg.optim.seed,
+                                                                        check_mask=checker_mask,
+                                                                        intermediate_vis=self.cfg.log.vis_diffusion_steps)
+        else:
+            cropped_rgb_output, steps_vis = self.diffusion.img2img_step(text_z, cropped_rgb_render.detach(),
                                                                     cropped_depth_render.detach(),
                                                                     guidance_scale=self.cfg.guide.guidance_scale,
                                                                     strength=1.0, update_mask=cropped_update_mask,

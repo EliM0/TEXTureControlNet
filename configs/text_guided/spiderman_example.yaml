@@ -1,0 +1,8 @@
+log:
+  exp_name: spiderman_example
+guide:
+  text: "Amazing Spiderman, hyper realistic, {} view"
+  append_direction: True
+  shape_path: shapes/spiderman_example.obj
+optim:
+  seed: 3

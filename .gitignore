@@ -7,3 +7,5 @@
 data/*
 logs/*
 .idea
+TOKEN
+models/control_sd15_depth.pth

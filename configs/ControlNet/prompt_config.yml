@@ -1,0 +1,2 @@
+negative_prompt: 'longbody, lowres, bad anatomy, bad hands, missing fingers, extra digit, fewer digits, cropped, worst quality, low quality'
+additional_prompt: 'best quality, extremely detailed'
