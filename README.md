@@ -42,3 +42,17 @@ python -m scripts.run_texture --config_path=configs/text_guided/spiderman_exampl
 ```
 
 In the `experiments` folder you should find the results.
+
+If you want to execute the basic TEXTure without ControlNet using this code you can add the `control_net: False` attribute to the `config file` you want to execute. For example:
+
+```yaml
+log:
+  exp_name: spiderman_example
+guide:
+  text: "Amazing Spiderman, hyper realistic, {} view"
+  append_direction: True
+  shape_path: shapes/spiderman_example.obj
+  control_net: False
+optim:
+  seed: 3
+```
