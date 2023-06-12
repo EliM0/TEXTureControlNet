@@ -24,7 +24,7 @@ pip install -r requirements.txt
 and Kaolin:
 
 ```bash
-pip install kaolin==0.13.0 -f https://nvidia-kaolin.s3.us-east-2.amazonaws.com/{TORCH_VER}_{CUDA_VER}.html
+pip install kaolin==0.11.0 -f https://nvidia-kaolin.s3.us-east-2.amazonaws.com/{TORCH_VER}_{CUDA_VER}.html
 ```
 
 Note that you also need a token for StableDiffusion. 
