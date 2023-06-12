@@ -46,7 +46,7 @@ class GuideConfig:
     # A huggingface diffusion model to use
     diffusion_name: str = 'stabilityai/stable-diffusion-2-depth'
     # Whether to use ControlNET as main model or not (if true, the model specified in diffusion_name is used only for inpainting)
-    control_net = True
+    control_net: bool = True
     # Scale of mesh in 1x1x1 cube
     shape_scale: float = 0.6
     # height of mesh
@@ -122,5 +122,3 @@ class TrainConfig:
     render: RenderConfig = field(default_factory=RenderConfig)
     optim: OptimConfig = field(default_factory=OptimConfig)
     guide: GuideConfig = field(default_factory=GuideConfig)
-
-
