@@ -1,6 +1,6 @@
 # Adding ControlNet to TEXTure
 
-In this repository we added [ControlNet](https://github.com/lllyasviel/ControlNet) to [TEXTure](https://github.com/TEXTurePaper/TEXTurePaper).
+In this repository we added [ControlNet](https://github.com/lllyasviel/ControlNet) to [TEXTure](https://github.com/TEXTurePaper/TEXTurePaper) to conduct some experiments using 3D models of the Avengers generated through [ECON](https://github.com/YuliangXiu/ECON).
 
 ## Content
 
